@@ -1,6 +1,7 @@
-(ns journal-repo.core
+(ns journal-repo.backend.atom
   (:require [journal-repo.util :as util]
-            [journal-repo.backend :as backend]))
+            [journal-repo.backend :as backend]
+            [clj-http.client :as http]))
 
 
 (def empty-backend {})
@@ -19,15 +20,9 @@
   (deref backend))
 
 
-
 (def basic-object
   {:datastreams {} :refs {}})
 
-
-(defmacro with
-  [pids & f]
-  `(doseq [~'*pid* ~pids]
-     ~f))
 
 (defn get-object
   ""
@@ -76,26 +71,23 @@
   nil)
 
 
-;(defn random-journal-entry
-;  ""
+(defn runner
+  ""
+  [code]
+  (load-string code))
+
+(defn get-checkpoint
+  ""
+  []
+  0) ; should be nil TODO FIX THE BUG
+
+;(defn new-store
+;  "Instantiates a new atom-backed store."
 ;  []
-;  (let [uuid (new-uuid)
-;        user (rand-nth ["aft" "abr" "kfc" "ktc" "jrg"])
-;        time "today"
-;        metadata {:user user, :time time}
-;        path [:datastreams :pbcore]
-;        f '(fn [_] "object bleh bleh")]
-;    `(~'update-object ~metadata ~uuid ~path ~f)))
-;
-;(defn random-journal
-;  ""
-;  ([] (random-journal 10))
-;  ([entries]
-;    (take entries
-;      (repeatedly random-journal-entry))))
-;
-;(defn print-journal
-;  ""
-;  [journal]
-;  (println
-;    (clojure.string/join "\n" (map str journal))))
+;  (let [backend (atom {})]
+;    {:store backend
+;     :get-object get-object
+;     :create-object create-object
+;     :delete-object delete-object
+;     :add-datastream add-datastream
+;     :delete-datastream delete-datastream}))
