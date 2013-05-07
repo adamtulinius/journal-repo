@@ -79,7 +79,7 @@
 (defn get-checkpoint
   ""
   []
-  0) ; should be nil TODO FIX THE BUG
+  nil) ; should be nil TODO FIX THE BUG
 
 ;(defn new-store
 ;  "Instantiates a new atom-backed store."

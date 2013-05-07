@@ -10,6 +10,6 @@
 
 (defn -main [& args]
   (case (first args)
-    "atom-loader" (loader/ingest-repeatedly atom/runner (atom/get-checkpoint))
-    "riak-loader" (loader/ingest-repeatedly riak/runner (riak/get-checkpoint))
+    "atom-ingester" (loader/ingest-repeatedly 'journal-repo.backend.atom atom/runner (atom/get-checkpoint))
+    "riak-ingester" (loader/ingest-repeatedly 'journal-repo.backend.riak riak/runner (riak/get-checkpoint))
     (println "Tough luck, try again.")))

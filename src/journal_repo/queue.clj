@@ -20,7 +20,7 @@
   (try
     (let [response (http/get (url-for-entry id))]
       {:id id :content (:body response)})
-    (catch Exception e nil)))
+    (catch Exception e false)))
 
 (defn foo
   [id]
@@ -46,6 +46,7 @@
           entry (get-entry next)
           id (:id entry)
           content (:content entry)]
+      (println id)
       (if (and id content)
         (do
           (f content)
@@ -53,11 +54,13 @@
 
 (defn load-all-from
   ""
-  ([f] (load-all-from f nil))
-  ([f checkpoint]
-    (last
-      (take-while (partial not= nil)
-        (iterate (partial load-next f) checkpoint)))))
+  ([f n] (load-all-from f n nil))
+  ([f n checkpoint]
+    (do
+      (use n)
+      (last
+        (take-while (partial not= false)
+          (iterate (partial load-next f) checkpoint))))))
 
 (defn put-str
   ""

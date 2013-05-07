@@ -12,11 +12,11 @@
 
 (defn ingest-repeatedly
   "Ingest data until the end of time."
-  ([f] (ingest-repeatedly nil))
-  ([f initial-checkpoint]
+  ([f n] (ingest-repeatedly f n nil))
+  ([f n initial-checkpoint]
     (loop [checkpoint initial-checkpoint]
       (println "Ingesting from checkpoint" checkpoint)
-      (let [next-checkpoint (queue/load-all-from f checkpoint)]
+      (let [next-checkpoint (queue/load-all-from n f checkpoint)]
         (if (ingest-status)
           (do
             (Thread/sleep 1000)
