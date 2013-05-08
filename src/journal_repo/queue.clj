@@ -46,10 +46,10 @@
           entry (get-entry next)
           id (:id entry)
           content (:content entry)]
-      (println id)
+      (println "loading entry" id)
       (if (and id content)
         (do
-          (f content)
+          (f id content)
           id)))))
 
 (defn load-all-from
@@ -61,6 +61,17 @@
       (last
         (take-while (partial not= false)
           (iterate (partial load-next f) checkpoint))))))
+
+(defn load-10-from
+  ""
+  ([f n] (load-all-from f n nil))
+  ([f n checkpoint]
+    (do
+      (use n)
+      (last
+        (take 11
+          (take-while (partial not= false)
+            (iterate (partial load-next f) checkpoint)))))))
 
 (defn put-str
   ""

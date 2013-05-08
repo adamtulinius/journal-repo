@@ -2,14 +2,14 @@
   (:gen-class)
   (:require [journal-repo.loader :as loader]
             [journal-repo.backend.atom :as atom]
-            [journal-repo.backend.riak :as riak])
-  ;(:use [clojure.tools.cli :only [cli]])
-  ;(:require [journal-repo.util :as util]
-  ;          [journal-repo.backend :as backend]))
-  )
+            [journal-repo.backend.riak :as riak]))
 
 (defn -main [& args]
   (case (first args)
-    "atom-ingester" (loader/ingest-repeatedly 'journal-repo.backend.atom atom/runner (atom/get-checkpoint))
-    "riak-ingester" (loader/ingest-repeatedly 'journal-repo.backend.riak riak/runner (riak/get-checkpoint))
+    "atom-ingest-all" (loader/ingest-repeatedly atom/runner 'journal-repo.backend.atom (atom/get-checkpoint))
+    "riak-ingest-all" (loader/ingest-repeatedly riak/runner 'journal-repo.backend.riak (riak/get-checkpoint))
+    "atom-ingest-10" (loader/ingest-10 atom/runner 'journal-repo.backend.atom (atom/get-checkpoint))
+    "riak-ingest-10" (loader/ingest-10 riak/runner 'journal-repo.backend.riak (riak/get-checkpoint))
+    "riak-objects" (riak/print-object-list)
+    "atom-objects" (atom/print-object-list)
     (println "Tough luck, try again.")))

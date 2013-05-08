@@ -6,6 +6,9 @@
 
 (def empty-backend {})
 
+(def checkpoint-atom
+  (atom nil))
+
 (def backend
   (atom empty-backend))
 
@@ -19,6 +22,11 @@
   []
   (deref backend))
 
+(defn print-object-list
+  ""
+  []
+  (println (clojure.string/join "\n" (sort (keys (get-backend))))))
+
 
 (def basic-object
   {:datastreams {} :refs {}})
@@ -27,12 +35,12 @@
 (defn get-object
   ""
   ([pid] (get-object pid nil))
-  ([pid path] (get-in (get-backend) (cons pid (cons :datastreams path)))))
+  ([pid path] (get-in (get-backend) (cons (name pid) (cons :datastreams path)))))
 
 (defn update-object
   ""
   [meta pid path f]
-  (swap! backend update-in (cons pid path) f))
+  (swap! backend update-in (cons (name pid) path) f))
 
 
 (defn add-datastream
@@ -40,9 +48,9 @@
   ([meta pid datastream]
     (add-datastream meta pid datastream {}))
   ([meta pid datastream content]
-    (if (get-object pid)
+    (if (get-object (name pid))
       (update-object
-        meta pid [:datastreams datastream]
+        meta (name pid) [:datastreams datastream]
         (fn [_] content))
       (throw (Exception. "Cannot add datastream to non-existing object.")))
     pid))
@@ -51,7 +59,7 @@
 (defn delete-datastream
   ""
   [meta pid datastream]
-  (swap! backend util/dissoc-in [pid :datastreams] datastream)
+  (swap! backend util/dissoc-in [(name pid) :datastreams] datastream)
   [pid datastream])
 
 (defn create-object
@@ -60,26 +68,33 @@
     (let [pid (backend/new-uuid)]
       (create-object meta pid)))
   ([meta pid]
-    (swap! backend assoc pid basic-object)
+    (swap! backend assoc (name pid) basic-object)
     pid))
 
 
 (defn delete-object
   ""
   [meta pid]
-  (swap! backend dissoc pid)
+  (swap! backend dissoc (name pid))
   nil)
 
-
-(defn runner
-  ""
-  [code]
-  (load-string code))
 
 (defn get-checkpoint
   ""
   []
-  nil) ; should be nil TODO FIX THE BUG
+  (deref checkpoint-atom))
+
+(defn set-checkpoint
+  ""
+  [checkpoint]
+  (reset! checkpoint-atom checkpoint))
+
+(defn runner
+  ""
+  [revision code]
+  (load-string code)
+  (set-checkpoint revision))
+
 
 ;(defn new-store
 ;  "Instantiates a new atom-backed store."
