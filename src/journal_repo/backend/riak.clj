@@ -11,7 +11,7 @@
   {:datastreams {} :refs {}})
 
 (def host "http://127.0.0.1:10018/riak")
-(def bucket "reklamefilm12")
+(def bucket "reklamefilm-all")
 
 (wc/connect! host)
 (wb/create bucket)

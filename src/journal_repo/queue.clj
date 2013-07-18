@@ -38,6 +38,18 @@
           #(foo (:id %1))
           {:id checkpoint})))))
 
+(defn load-next2
+  ""
+  ([] (load-next nil))
+  ([checkpoint]
+    (let [next (next-id checkpoint)
+          entry (get-entry next)
+          id (:id entry)
+          content (:content entry)]
+      (println "loading entry" id)
+      (if (and id content)
+        entry))))
+
 (defn load-next
   ""
   ([f] (load-next f nil))
@@ -60,7 +72,7 @@
       (use n)
       (last
         (take-while (partial not= false)
-          (iterate (partial load-next f) checkpoint))))))
+          (iterate load-next checkpoint))))))
 
 (defn load-10-from
   ""
@@ -72,6 +84,16 @@
         (take 11
           (take-while (partial not= false)
             (iterate (partial load-next f) checkpoint)))))))
+
+(defn load-10-from2
+  ""
+  ([f n] (load-all-from f n nil))
+  ([f n checkpoint]
+    (do
+      (use n)
+      (take 11
+        (take-while (partial not= false)
+          (iterate #(load-next2 {:id %1}) {:id checkpoint}))))))
 
 (defn put-str
   ""
